@@ -77,3 +77,14 @@ def test_analyzer_demo_button_fills_the_risky_example():
     click(at, "Load flashlight demo")
     assert at.selectbox(key="pa_type").value == "Flashlight"
     assert sorted(at.multiselect(key="pa_perms").value) == RISKY
+
+
+def test_theme_switcher_toggles_mode_without_error():
+    at = start(HOME)
+    assert not at.exception
+    assert at.radio(key="theme_radio_selector").value == "Dark (SOC)"
+    at.radio(key="theme_radio_selector").set_value("Light").run()
+    assert not at.exception
+    assert at.session_state["theme_mode"] == "light"
+
+
