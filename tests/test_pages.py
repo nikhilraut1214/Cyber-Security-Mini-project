@@ -87,4 +87,3 @@ def test_theme_switcher_toggles_mode_without_error():
     assert not at.exception
     assert at.session_state["theme_mode"] == "light"
 
-

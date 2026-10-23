@@ -11,7 +11,7 @@ ui.apply_theme()
 ui.render_sidebar_nav()
 ui.render_simulation_banner()
 ui.render_page_header(
-    "MOBILE DEVICE MANAGEMENT CONSOLE",
+    "Mobile Device Management Console",
     "Simulate endpoint policy enforcement, application installations, and outbound DLP inspection.",
 )
 
@@ -35,8 +35,8 @@ device = store.get_device(st.session_state)
 with st.sidebar:
     st.markdown(
         """
-        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--soc-text-secondary); margin-bottom: 6px;">
-            SIMULATED ENDPOINT PROFILE
+        <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--soc-text-secondary); margin-bottom: 8px;">
+            Simulated Endpoint Profile
         </div>
         """,
         unsafe_allow_html=True,
@@ -50,7 +50,6 @@ with st.sidebar:
     st.markdown(f"Operational State: {status_badge}", unsafe_allow_html=True)
     st.markdown(f"Installed Packages: **`{len(device['installed_apps'])}`**")
 
-    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
     if device["wiped"]:
         if st.button("Re-enrol device", use_container_width=True):
             store.reenrol_device(st.session_state)
@@ -59,13 +58,13 @@ with st.sidebar:
         if st.button("Lost phone — wipe", type="secondary", use_container_width=True):
             store.wipe_device(st.session_state)
             st.rerun()
-    st.caption("Device wipe clears simulated packages and revokes active state.")
+    st.caption("Device wipe clears simulated packages and revokes active operational state.")
 
 if device["wiped"]:
     st.error("This device was wiped. Re-enrol it to continue.")
     st.stop()
 
-install_col, device_col = st.columns([1.2, 0.8], gap="large")
+install_col, device_col = st.columns([1.25, 0.75], gap="large")
 
 with install_col:
     st.subheader("Install an Application")
@@ -95,7 +94,7 @@ with install_col:
                 )
                 store.clear_pending_install(st.session_state)
                 st.success(
-                    f"[ALLOW] {clean_name} installed successfully. Policy Risk: {analysis['level']} (Score: {analysis['score']})."
+                    f"[Allow] {clean_name} installed successfully. Risk: {analysis['level']} (score {analysis['score']})."
                 )
             elif analysis["action"] == "Block":
                 store.log_decision(
@@ -106,12 +105,12 @@ with install_col:
                 )
                 store.clear_pending_install(st.session_state)
                 st.error(
-                    f"[BLOCK] Installation blocked by policy. Risk level: {analysis['level']} (Score: {analysis['score']})."
+                    f"[Block] Installation blocked by policy. Risk: {analysis['level']} (score {analysis['score']})."
                 )
             else:
                 store.set_pending_install(st.session_state, pending)
                 st.warning(
-                    f"[REVIEW] Needs administrator review. Risk level: {analysis['level']} (Score: {analysis['score']})."
+                    f"[Review] Needs administrator review. Risk: {analysis['level']} (score {analysis['score']})."
                 )
         except ValueError as exc:
             st.error(str(exc))
@@ -119,26 +118,12 @@ with install_col:
     pending = store.get_pending_install(st.session_state)
     if pending:
         analysis = pending["analysis"]
-        st.markdown(
-            f"""
-            <div class="soc-card" style="border-left: 3px solid var(--soc-accent);">
-                <div class="soc-card-header">
-                    <span>ADMINISTRATIVE APPROVAL QUEUE</span>
-                    {ui.badge_html("NEEDS REVIEW", "review")}
-                </div>
-                <div style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">
-                    {pending['name']} <span style="font-size: 12px; color: var(--soc-text-secondary);">({pending['type']})</span>
-                    &nbsp;·&nbsp; Calculated Risk Score: <code>{analysis['score']}</code>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
         st.warning(
-            f"Pending review: **{pending['name']}** ({pending['type']}) — score {analysis['score']}"
+            f"Pending review: **{pending['name']}** ({pending['type']}) — Calculated Risk Score: {analysis['score']} ({analysis['level']} Risk)"
         )
+        st.markdown("**Policy violation reasons:**")
         for reason in analysis["reasons"]:
-            st.write(f"• {reason}")
+            st.markdown(f"- `{reason}`")
 
         approve_col, reject_col = st.columns(2)
         if approve_col.button(
@@ -182,7 +167,17 @@ with device_col:
             }
             for app in current
         ]
-        st.dataframe(app_rows, width="stretch", hide_index=True)
+        st.dataframe(
+            app_rows,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Package": st.column_config.TextColumn("Package", width="medium"),
+                "Category": st.column_config.TextColumn("Category", width="small"),
+                "Risk Level": st.column_config.TextColumn("Risk Level", width="small"),
+                "Score": st.column_config.TextColumn("Score", width="small"),
+            },
+        )
     else:
         st.caption("No packages currently installed on simulated endpoint.")
 
@@ -197,7 +192,7 @@ with st.form("send_form"):
         "Message to check",
         placeholder="Example: Call me on 9876543210",
         max_chars=MAX_TEXT_LENGTH + 1,
-        height=110,
+        height=120,
     )
     send = st.form_submit_button("Check and send", type="primary")
 
@@ -207,14 +202,14 @@ if send:
         summary = summarize_findings(result["findings"])
         if result["action"] == "Allow":
             store.log_decision(st.session_state, "Send", summary, "Sent unchanged")
-            st.success("[ALLOW] Clean payload. Outbound transmission permitted without modification.")
+            st.success("Clean payload. Outbound transmission permitted without modification.")
         elif result["action"] == "Mask":
             store.log_decision(st.session_state, "Send", summary, "Masked and sent")
-            st.warning("[MASK] Sensitive pattern detected. Payload masked prior to transmission:")
+            st.warning("Sensitive pattern detected. Payload masked prior to transmission:")
             st.code(result["masked_text"])
         else:
             store.log_decision(st.session_state, "Send", summary, "Blocked")
-            st.error("[BLOCK] High-risk pattern detected. Outbound message blocked.")
+            st.error("High-risk pattern detected. Outbound message blocked.")
             findings_types = ", ".join(sorted({f["type"] for f in result["findings"]}))
             st.write(f"Detected Pattern Types: `{findings_types}`")
 
@@ -229,6 +224,16 @@ st.divider()
 st.subheader("Session Audit Trail")
 logs = store.get_log(st.session_state)
 if logs:
-    st.dataframe(logs, width="stretch", hide_index=True)
+    st.dataframe(
+        logs,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "time": st.column_config.TextColumn("Timestamp", width="medium"),
+            "event": st.column_config.TextColumn("Event", width="small"),
+            "detail": st.column_config.TextColumn("Details", width="large"),
+            "result": st.column_config.TextColumn("Outcome", width="medium"),
+        },
+    )
 else:
     st.write("No events yet. Try installing an app.")

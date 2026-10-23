@@ -1,6 +1,6 @@
 """Centralized UI/UX design system tokens, themes, and presentation components.
 
-Follows the SOC Technical Minimal specification.
+Follows the Enterprise Security Operations / SOC Technical Minimal specification.
 Pure presentation layer; no modifications to business logic or session storage.
 """
 
@@ -106,16 +106,51 @@ def generate_css(theme_key: str) -> str:
         background-color: {t['bg_base']} !important;
         color: {t['text_primary']} !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        font-size: 15px !important;
+        line-height: 1.6 !important;
     }}
 
-    /* Global typography overrides */
-    .stApp h1, .stApp h2, .stApp h3, .stApp h4 {{
-        color: {t['text_primary']} !important;
+    /* Global typography hierarchy */
+    .stApp h1 {{
+        font-size: 28px !important;
         font-weight: 600 !important;
+        color: {t['text_primary']} !important;
+        letter-spacing: -0.02em !important;
+        line-height: 1.25 !important;
+        margin-bottom: 6px !important;
+    }}
+    .stApp h2, .stApp h3, [data-testid="stHeadingWithActionElements"] {{
+        font-size: 21px !important;
+        font-weight: 600 !important;
+        color: {t['text_primary']} !important;
         letter-spacing: -0.015em !important;
+        line-height: 1.35 !important;
+        margin-top: 14px !important;
+        margin-bottom: 8px !important;
+    }}
+    .stApp h4 {{
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: {t['text_primary']} !important;
+        line-height: 1.4 !important;
     }}
     .stApp p, .stApp label, .stApp span, .stApp div {{
         color: {t['text_primary']};
+    }}
+
+    /* Form labels */
+    .stTextInput label, .stTextArea label, .stSelectbox label, .stMultiSelect label {{
+        font-size: 14.5px !important;
+        font-weight: 500 !important;
+        color: {t['text_primary']} !important;
+        margin-bottom: 4px !important;
+    }}
+
+    /* Captions and secondary notes */
+    .stCaption, small, .stApp small {{
+        font-size: 13px !important;
+        color: {t['text_secondary']} !important;
+        line-height: 1.5 !important;
     }}
 
     /* Sidebar surface */
@@ -126,36 +161,40 @@ def generate_css(theme_key: str) -> str:
     [data-testid="stSidebar"] * {{
         color: {t['text_primary']};
     }}
+    [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {{
+        font-size: 17px !important;
+        margin-top: 10px !important;
+    }}
 
     /* Simulation Compliance Banner */
     .soc-env-banner {{
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 6px 14px;
+        padding: 8px 16px;
         background-color: {t['bg_subtle']};
         border: 1px solid {t['border']};
-        border-radius: 4px;
-        margin-bottom: 16px;
-        font-size: 12px;
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 13.5px;
     }}
     .soc-env-badge {{
         display: inline-block;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 700;
-        padding: 2px 7px;
-        border-radius: 3px;
+        padding: 3px 8px;
+        border-radius: 4px;
         background-color: {t['badge_neutral_bg']};
         color: {t['badge_neutral_text']};
         border: 1px solid {t['badge_neutral_border']};
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
     }}
     .soc-env-meta {{
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 11px;
+        font-size: 12.5px;
         color: {t['text_secondary']};
-        letter-spacing: 0.02em;
+        letter-spacing: 0.01em;
     }}
 
     /* Technical Card Containers */
@@ -163,16 +202,15 @@ def generate_css(theme_key: str) -> str:
         background-color: {t['bg_surface']};
         border: 1px solid {t['border']};
         border-radius: 6px;
-        padding: 14px 16px;
-        margin-bottom: 14px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
     }}
     .soc-card-header {{
-        font-size: 11.5px;
+        font-size: 14.5px;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.02em;
         color: {t['text_secondary']};
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -183,26 +221,25 @@ def generate_css(theme_key: str) -> str:
         background-color: {t['bg_surface']};
         border: 1px solid {t['border']};
         border-radius: 6px;
-        padding: 12px 14px;
-        height: 100%;
+        padding: 14px 16px;
+        min-height: 84px;
     }}
     .soc-kpi-label {{
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-size: 13.5px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
         color: {t['text_secondary']};
         margin-bottom: 4px;
     }}
     .soc-kpi-val {{
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 24px;
+        font-size: 26px;
         font-weight: 700;
         color: {t['text_primary']};
         line-height: 1.2;
     }}
     .soc-kpi-sub {{
-        font-size: 11.5px;
+        font-size: 12.5px;
         color: {t['text_muted']};
         margin-top: 4px;
     }}
@@ -211,13 +248,13 @@ def generate_css(theme_key: str) -> str:
     .soc-badge {{
         display: inline-block;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 700;
-        padding: 2px 7px;
-        border-radius: 3px;
-        letter-spacing: 0.05em;
+        padding: 3px 8px;
+        border-radius: 4px;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
-        line-height: 1.4;
+        line-height: 1.3;
     }}
     .soc-badge-allow {{
         background-color: {t['badge_allow_bg']};
@@ -245,41 +282,23 @@ def generate_css(theme_key: str) -> str:
         border: 1px solid {t['badge_neutral_border']};
     }}
 
-    /* Verdict Card */
-    .soc-verdict-card {{
-        background-color: {t['bg_subtle']};
-        border: 1px solid {t['border']};
-        border-radius: 6px;
-        padding: 14px 16px;
-        margin-top: 10px;
-        margin-bottom: 12px;
-    }}
-    .soc-verdict-title {{
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 6px;
-    }}
-
     /* Streamlit Metric Box styling */
     [data-testid="stMetric"] {{
         background-color: {t['bg_surface']} !important;
         border: 1px solid {t['border']} !important;
         border-radius: 6px !important;
-        padding: 10px 14px !important;
+        padding: 12px 16px !important;
     }}
     [data-testid="stMetricLabel"] {{
         color: {t['text_secondary']} !important;
-        font-size: 11px !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
+        font-size: 13.5px !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.01em !important;
     }}
     [data-testid="stMetricValue"] {{
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
         color: {t['text_primary']} !important;
-        font-size: 22px !important;
+        font-size: 26px !important;
     }}
 
     /* Form and Input styling */
@@ -288,15 +307,16 @@ def generate_css(theme_key: str) -> str:
         color: {t['text_primary']} !important;
         border-color: {t['border_strong']} !important;
         border-radius: 4px !important;
+        font-size: 14.5px !important;
     }}
     .stTextInput input:focus, .stTextArea textarea:focus {{
         border-color: {t['accent']} !important;
     }}
 
-    /* Dataframe table border and rounding */
+    /* Dataframe table border and typography */
     [data-testid="stDataFrame"], [data-testid="stTable"] {{
         border: 1px solid {t['border']} !important;
-        border-radius: 4px !important;
+        border-radius: 6px !important;
         background-color: {t['bg_surface']} !important;
     }}
 
@@ -306,7 +326,9 @@ def generate_css(theme_key: str) -> str:
         color: #FFFFFF !important;
         border: none !important;
         border-radius: 4px !important;
+        font-size: 14.5px !important;
         font-weight: 500 !important;
+        padding: 6px 14px !important;
     }}
     .stButton button[kind="primary"]:hover {{
         background-color: {t['accent_hover']} !important;
@@ -316,6 +338,8 @@ def generate_css(theme_key: str) -> str:
         color: {t['text_primary']} !important;
         border: 1px solid {t['border_strong']} !important;
         border-radius: 4px !important;
+        font-size: 14.5px !important;
+        padding: 6px 14px !important;
     }}
     .stButton button[kind="secondary"]:hover {{
         background-color: {t['bg_subtle']} !important;
@@ -324,15 +348,23 @@ def generate_css(theme_key: str) -> str:
     /* Inline code blocks */
     code {{
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
-        font-size: 12px !important;
+        font-size: 13.5px !important;
         background-color: {t['code_bg']} !important;
         color: {t['text_primary']} !important;
-        padding: 2px 5px !important;
-        border-radius: 3px !important;
+        padding: 2px 6px !important;
+        border-radius: 4px !important;
         border: 1px solid {t['border']} !important;
     }}
     pre code {{
         border: none !important;
+        font-size: 13.5px !important;
+    }}
+
+    /* Streamlit notification alerts styling */
+    [data-testid="stAlert"] {{
+        border-radius: 6px !important;
+        font-size: 14.5px !important;
+        padding: 12px 16px !important;
     }}
     </style>
     """
@@ -350,8 +382,8 @@ def render_sidebar_nav() -> None:
     with st.sidebar:
         st.markdown(
             """
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--soc-text-secondary); margin-bottom: 8px;">
-                DISPLAY THEME
+            <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--soc-text-secondary); margin-bottom: 8px;">
+                Display Theme
             </div>
             """,
             unsafe_allow_html=True,
@@ -373,14 +405,14 @@ def render_sidebar_nav() -> None:
         st.divider()
         st.markdown(
             """
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--soc-text-secondary); margin-bottom: 8px;">
-                SYSTEM TELEMETRY
+            <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--soc-text-secondary); margin-bottom: 8px;">
+                System Telemetry
             </div>
-            <div style="font-family: ui-monospace, monospace; font-size: 11.5px; line-height: 1.6; color: var(--soc-text-muted);">
-                ENGINE: Heuristic v1.2<br>
-                PROFILE: Android Sandbox<br>
-                STORAGE: In-Memory Session<br>
-                PRIVACY: Non-Attributed Log
+            <div style="font-family: ui-monospace, monospace; font-size: 12.5px; line-height: 1.7; color: var(--soc-text-muted);">
+                Engine: Heuristic v1.2<br>
+                Profile: Android Sandbox<br>
+                Storage: In-Memory Session<br>
+                Privacy: Non-Attributed Log
             </div>
             """,
             unsafe_allow_html=True,
@@ -392,11 +424,11 @@ def render_simulation_banner() -> None:
     st.markdown(
         """
         <div class="soc-env-banner">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="soc-env-badge">SIMULATION ENVIRONMENT</span>
-                <span class="soc-env-meta">STATIC HEURISTIC RULE ENGINE · LOCAL DEMO DATA ONLY</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="soc-env-badge">SIMULATION SANDBOX</span>
+                <span class="soc-env-meta">Static Heuristic Rule Engine · Synthetic Demonstration Data Only</span>
             </div>
-            <span class="soc-badge soc-badge-neutral">LOCAL SIMULATION</span>
+            <span class="soc-badge soc-badge-neutral">Local Simulation</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -407,11 +439,11 @@ def render_page_header(title: str, subtitle: str) -> None:
     """Render consistent technical header."""
     st.markdown(
         f"""
-        <div style="margin-bottom: 14px;">
-            <h1 style="font-size: 22px; font-weight: 600; margin: 0; padding: 0; letter-spacing: -0.02em;">
+        <div style="margin-bottom: 16px;">
+            <h1 style="font-size: 28px; font-weight: 600; margin: 0; padding: 0; letter-spacing: -0.02em;">
                 {title}
             </h1>
-            <div style="font-size: 13px; color: var(--soc-text-secondary); margin-top: 3px;">
+            <div style="font-size: 15px; color: var(--soc-text-secondary); margin-top: 4px;">
                 {subtitle}
             </div>
         </div>

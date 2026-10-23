@@ -10,7 +10,7 @@ ui.apply_theme()
 ui.render_sidebar_nav()
 ui.render_simulation_banner()
 ui.render_page_header(
-    "PERMISSION RISK ANALYZER",
+    "Permission Risk Analyzer",
     "Evaluate Android package permissions against category least-privilege baselines using weighted heuristics.",
 )
 
@@ -25,7 +25,7 @@ def load_flashlight_demo():
     st.session_state["pa_perms"] = ["CAMERA", "ACCESS_FINE_LOCATION", "READ_CONTACTS"]
 
 
-input_col, result_col = st.columns([1.1, 0.9], gap="large")
+input_col, result_col = st.columns([1.15, 0.85], gap="large")
 
 with input_col:
     st.subheader("Package Configuration")
@@ -45,10 +45,10 @@ with input_col:
         f"""
         <div class="soc-card">
             <div class="soc-card-header">
-                <span>CATEGORY BASELINE FOR {app_type.upper()}</span>
-                {ui.badge_html("LEAST PRIVILEGE", "neutral")}
+                <span>Category Baseline: {app_type}</span>
+                {ui.badge_html("Least Privilege", "neutral")}
             </div>
-            <div style="font-size: 13px; color: var(--soc-text-secondary);">
+            <div style="font-size: 14px; color: var(--soc-text-secondary);">
                 Expected permissions: <code style="color: var(--soc-text-primary);">{expected_str}</code>
             </div>
         </div>
@@ -65,55 +65,22 @@ with result_col:
             level = result["level"]
             score = result["score"]
 
-            badge_kind = {
-                "Allow": "allow",
-                "Review": "review",
-                "Block": "block",
-            }.get(action, "neutral")
-
-            st.markdown(
-                f"""
-                <div class="soc-card" style="border-left: 3px solid var(--soc-accent);">
-                    <div class="soc-card-header">
-                        <span>POLICY DECISION</span>
-                        {ui.badge_html(f"{action.upper()}", badge_kind)}
-                    </div>
-                    <div style="display: flex; gap: 20px; align-items: baseline; margin: 8px 0;">
-                        <div>
-                            <span style="font-size: 11px; color: var(--soc-text-secondary); text-transform: uppercase;">Heuristic Score</span>
-                            <div style="font-family: ui-monospace, monospace; font-size: 26px; font-weight: 700; color: var(--soc-text-primary);">
-                                {score}
-                            </div>
-                        </div>
-                        <div>
-                            <span style="font-size: 11px; color: var(--soc-text-secondary); text-transform: uppercase;">Assigned Risk</span>
-                            <div style="font-size: 16px; font-weight: 600; color: var(--soc-text-primary);">
-                                {level} Risk
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            # Preserve standard Streamlit message elements for accessibility and tests
+            # Unified single verdict callout
             if action == "Allow":
-                st.success(f"Action: {action} — {level} risk (Calculated score: {score})")
+                st.success(f"Policy Decision: {action} — {level} Risk (Calculated Score: {score})")
             elif action == "Review":
-                st.warning(f"Action: {action} — {level} risk (Calculated score: {score})")
+                st.warning(f"Policy Decision: {action} — {level} Risk (Calculated Score: {score})")
             else:
-                st.error(f"Action: {action} — {level} risk (Calculated score: {score})")
+                st.error(f"Policy Decision: {action} — {level} Risk (Calculated Score: {score})")
 
             st.markdown("**Unexpected Permissions Identified:**")
             if result["unexpected"]:
                 badges = " ".join([ui.badge_html(p, "block") for p in result["unexpected"]])
                 st.markdown(badges, unsafe_allow_html=True)
             else:
-                st.markdown(ui.badge_html("NONE", "allow"), unsafe_allow_html=True)
+                st.markdown(ui.badge_html("None (All permissions expected)", "allow"), unsafe_allow_html=True)
 
-            st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
-            st.markdown("**Heuristic Policy Violations:**")
+            st.markdown("**Policy Heuristic Evaluation:**")
             for reason in result["reasons"]:
                 st.markdown(f"- `{reason}`")
 

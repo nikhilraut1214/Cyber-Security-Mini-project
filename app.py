@@ -12,7 +12,7 @@ ui.apply_theme()
 ui.render_sidebar_nav()
 ui.render_simulation_banner()
 ui.render_page_header(
-    "ENDPOINT SECURITY & DLP CONSOLE",
+    "Mobile Endpoint Security Console",
     "Operational overview of simulated endpoint permissions, outbound data checks, and audit telemetry.",
 )
 
@@ -27,10 +27,8 @@ col2.metric("Installed Apps", counts["installed_apps"])
 col3.metric("Blocked Installs", counts["blocked_installs"])
 col4.metric("DLP Blocked/Masked Events", counts["masked_sends"] + counts["blocked_sends"])
 
-st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
-
 # Two-column operational ledger and rules reference
-left_col, right_col = st.columns([1.2, 0.8], gap="large")
+left_col, right_col = st.columns([1.25, 0.75], gap="large")
 
 with left_col:
     st.subheader("Simulated Device Ledger")
@@ -41,7 +39,7 @@ with left_col:
     )
     st.markdown(
         f"""
-        <div style="font-size: 13px; color: var(--soc-text-secondary); margin-bottom: 8px;">
+        <div style="font-size: 14.5px; color: var(--soc-text-secondary); margin-bottom: 10px;">
             Endpoint: <strong style="color: var(--soc-text-primary);">{device['name']}</strong>
             &nbsp;·&nbsp; Operational Status: {status_badge}
         </div>
@@ -59,7 +57,17 @@ with left_col:
             }
             for app in device["installed_apps"]
         ]
-        st.dataframe(app_rows, width="stretch", hide_index=True)
+        st.dataframe(
+            app_rows,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Package Name": st.column_config.TextColumn("Package Name", width="medium"),
+                "Category": st.column_config.TextColumn("Category", width="small"),
+                "Risk Level": st.column_config.TextColumn("Risk Level", width="small"),
+                "Risk Score": st.column_config.TextColumn("Risk Score", width="small"),
+            },
+        )
     else:
         st.caption("No apps installed yet. Open **MDM Console** to try installing a demo app.")
 
@@ -68,14 +76,30 @@ with right_col:
     st.caption("Static permission weights and category baselines applied by the policy engine.")
     with st.expander("Permission Risk Weights", expanded=True):
         weight_rows = [{"Permission": perm, "Weight": weight} for perm, weight in sorted(rules.WEIGHTS.items())]
-        st.dataframe(weight_rows, width="stretch", hide_index=True)
-
-st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
+        st.dataframe(
+            weight_rows,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Permission": st.column_config.TextColumn("Permission Identifier", width="medium"),
+                "Weight": st.column_config.NumberColumn("Weight", format="%d", width="small"),
+            },
+        )
 
 st.subheader("Audit Trail")
 logs = store.get_log(st.session_state)
 if logs:
-    st.dataframe(logs, width="stretch", hide_index=True)
+    st.dataframe(
+        logs,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "time": st.column_config.TextColumn("Timestamp", width="medium"),
+            "event": st.column_config.TextColumn("Event", width="small"),
+            "detail": st.column_config.TextColumn("Details", width="large"),
+            "result": st.column_config.TextColumn("Outcome", width="medium"),
+        },
+    )
     st.download_button(
         "Export audit log as CSV",
         data=store.log_to_csv(st.session_state),
